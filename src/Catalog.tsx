@@ -1,16 +1,28 @@
-import { books } from "./books";
 import { useContext } from "react";
 import { FavoritesContext } from "./FavoriteContext";
 import BookCard from './BookСard'
+import { useLoad } from "./hooks/useLoad";
+import { getBooks } from "./api/api";
+import RequestError from "./RequestError";
 
 export default function Catalog() {
   const ctx = useContext(FavoritesContext);
+  let {data, loading , error, retry} = useLoad(getBooks, 1)
 
+  if (loading) {
+    return (
+      <h1>Загрузка !!!</h1>
+    )
+  } else if (error) {
+    return (
+      <RequestError message={error?.message} handleClick={retry}  />
+    )
+  }
   return (
-    <section>
+    <section> 
       <h2>Книги</h2>
       <div style={{display: 'flex', gap:'20px'}}>
-        {books.map((book) => (
+        {data.map((book: any) => (
           <BookCard
             key={book.id}
             book={book}
